@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { ListingGrid } from "@/components/listing-grid";
-import { formatMoney } from "@/lib/format";
 import { serverFetchJson } from "@/lib/server-api";
 import type { Category, Listing } from "@/lib/types";
 
@@ -17,140 +16,58 @@ const categoryGlyphs: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const [featuredListings, categories] = await Promise.all([
-    serverFetchJson<Listing[]>("/listings/?featured=true"),
+  const [listings, categories] = await Promise.all([
+    serverFetchJson<Listing[]>("/listings/"),
     serverFetchJson<Category[]>("/categories/"),
   ]);
 
-  const topListing = featuredListings[0];
-  const spotlight = featuredListings.slice(0, 4);
-
   return (
-    <div className="page-grid">
-      <section className="hero">
-        <div className="hero-copy">
-          <p className="eyebrow">HamroTour reimagined</p>
-          <h1>Explore extraordinary stays.</h1>
-          <p>
-            A modern travel marketplace for Nepal and beyond, rebuilt with a Django API, Next.js frontend,
-            and S3-backed media uploads in place of Cloudinary.
+    <div className="wl-home">
+      {/* Red Wanderlust-style banner */}
+      <section className="wl-banner">
+        <div className="wl-banner-content">
+          <h1 className="wl-banner-title">Explore Extraordinary Stays</h1>
+          <p className="wl-banner-subtitle">
+            Discover unique homes, cabins, villas &amp; more around Nepal and beyond
           </p>
-          <div className="hero-actions">
-            <Link className="button button-solid" href="/listings">
-              Explore stays
+          <div className="wl-banner-actions">
+            <Link className="wl-banner-chip" href="/listings">
+              <span aria-hidden="true">🛡️</span>
+              <span>Verified Hosts</span>
             </Link>
-            <Link className="button button-ghost" href="/host/new">
-              Host your place
+            <Link className="wl-banner-chip" href="/contact">
+              <span aria-hidden="true">🎧</span>
+              <span>24/7 Support</span>
             </Link>
-          </div>
-          <div className="hero-pills">
-            <span className="chip chip-soft">Verified hosts</span>
-            <span className="chip chip-soft">Fast booking</span>
-            <span className="chip chip-soft">S3 media</span>
-          </div>
-        </div>
-
-        <div className="hero-panel">
-          <div className="hero-mosaic">
-            {spotlight.length ? (
-              spotlight.map((listing, index) => (
-                <Link
-                  key={listing.id}
-                  href={`/listings/${listing.slug}`}
-                  className={`hero-tile ${index === 0 ? "hero-tile--lead" : ""}`}
-                >
-                  {listing.image_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={listing.image_url} alt={listing.title} />
-                  ) : (
-                    <div className="listing-placeholder">
-                      <span>{listing.category}</span>
-                    </div>
-                  )}
-                  <div className="hero-tile-copy">
-                    <span className="hero-tile-kicker">
-                      {listing.is_featured ? "Featured stay" : listing.category}
-                    </span>
-                    <strong>{listing.title}</strong>
-                    <span>{listing.location}, {listing.country}</span>
-                  </div>
-                </Link>
-              ))
-            ) : (
-              <div className="hero-empty">
-                <p className="eyebrow">Demo ready</p>
-                <strong>Add sample listings to unlock the full homepage collage.</strong>
-              </div>
-            )}
-          </div>
-          <div className="hero-panel-content">
-            <div className="hero-stats">
-              <div className="stat-card">
-                <strong>{featuredListings.length}</strong>
-                <span className="muted">featured escapes</span>
-              </div>
-              <div className="stat-card">
-                <strong>{categories.length}</strong>
-                <span className="muted">categories</span>
-              </div>
-              <div className="stat-card">
-                <strong>{topListing ? formatMoney(topListing.price) : "$0"}</strong>
-                <span className="muted">starting price</span>
-              </div>
-            </div>
-            <p className="muted">
-              Built for fast browsing, simple bookings, and media uploads stored in Amazon S3.
-            </p>
+            <Link className="wl-banner-chip" href="/listings">
+              <span aria-hidden="true">⭐</span>
+              <span>Top Rated</span>
+            </Link>
+            <Link className="wl-banner-chip" href="/host/new">
+              <span aria-hidden="true">🏠</span>
+              <span>Become a Host</span>
+            </Link>
           </div>
         </div>
       </section>
 
-      <section className="surface">
-        <div className="section-heading compact">
-          <p className="eyebrow">Categories</p>
-          <h2>Browse by vibe</h2>
-        </div>
-        <div className="category-rail">
-          {categories.map((category) => (
-            <Link key={category.value} href={`/listings?category=${category.value}`} className="category-card">
-              <span className="category-glyph">{categoryGlyphs[category.value] || "•"}</span>
-              <strong>{category.label}</strong>
-              <span>Curated escapes</span>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/* Category icon filter rail */}
+      <nav className="wl-filters" aria-label="Browse by category">
+        <Link href="/listings" className="wl-filter wl-filter-active">
+          <span className="wl-filter-icon" aria-hidden="true">✨</span>
+          <span>All</span>
+        </Link>
+        {categories.map((category) => (
+          <Link key={category.value} href={`/listings?category=${category.value}`} className="wl-filter">
+            <span className="wl-filter-icon" aria-hidden="true">{categoryGlyphs[category.value] || "•"}</span>
+            <span>{category.label}</span>
+          </Link>
+        ))}
+      </nav>
 
-      <section className="surface surface-emphasis">
-        <div className="section-heading compact">
-          <p className="eyebrow">Why HamroTour</p>
-          <h2>Built for modern travel discovery</h2>
-        </div>
-        <div className="feature-grid">
-          <article className="feature-card">
-            <span className="feature-kicker">Search</span>
-            <h3>Quick discovery</h3>
-            <p>Search by country, price, guests, and category with a clean rail that feels fast on mobile.</p>
-          </article>
-          <article className="feature-card">
-            <span className="feature-kicker">Media</span>
-            <h3>S3-ready uploads</h3>
-            <p>Listings can use Amazon S3 for storage while keeping imported demo content visible out of the box.</p>
-          </article>
-          <article className="feature-card">
-            <span className="feature-kicker">Bookings</span>
-            <h3>Simple booking flow</h3>
-            <p>Check dates, add guests, and keep the booking experience lightweight without losing key details.</p>
-          </article>
-        </div>
-      </section>
-
-      <section className="surface">
-        <div className="section-heading compact">
-          <p className="eyebrow">Featured</p>
-          <h2>Curated stays worth opening first</h2>
-        </div>
-        <ListingGrid listings={featuredListings} emptyLabel="Featured listings will appear here once hosts publish them." />
+      {/* 4-column listing grid with wishlist hearts + price badges */}
+      <section className="wl-grid-section">
+        <ListingGrid listings={listings} emptyLabel="No listings found. Try a different search or explore all categories." />
       </section>
     </div>
   );
