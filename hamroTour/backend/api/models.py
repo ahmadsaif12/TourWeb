@@ -68,6 +68,7 @@ class Listing(models.Model):
     latitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
     image = models.ImageField(upload_to="listings/", blank=True, null=True)
+    external_image_url = models.URLField(blank=True)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -92,6 +93,8 @@ class Listing(models.Model):
 
     @property
     def image_url(self) -> str:
+        if self.external_image_url:
+            return self.external_image_url
         if self.image:
             return self.image.url
         return ""

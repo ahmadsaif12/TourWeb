@@ -10,12 +10,13 @@ import type { Listing, Review } from "@/lib/types";
 export default async function ListingDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   try {
+    const { id } = await params;
     const [listing, reviews] = await Promise.all([
-      serverFetchJson<Listing>(`/listings/${params.id}/`),
-      serverFetchJson<Review[]>(`/reviews/?listing=${params.id}`),
+      serverFetchJson<Listing>(`/listings/${id}/`),
+      serverFetchJson<Review[]>(`/reviews/?listing=${id}`),
     ]);
 
     return (

@@ -17,8 +17,8 @@ const displayFont = Sora({
 });
 
 export const metadata: Metadata = {
-  title: "HamroTour",
-  description: "Travel marketplace rebuilt with Django, Next.js, and S3 media storage.",
+  title: "HamroTour | Extraordinary stays",
+  description: "Travel marketplace rebuilt with Django, Next.js, S3 media storage, and seeded demo listings.",
 };
 
 export default function RootLayout({

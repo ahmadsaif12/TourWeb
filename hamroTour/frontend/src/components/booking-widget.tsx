@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { apiFetch } from "@/lib/api";
 import { formatMoney } from "@/lib/format";
@@ -14,7 +14,6 @@ export function BookingWidget({ listing }: Props) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [preview, setPreview] = useState<string>("");
   const [form, setForm] = useState({
     check_in: "",
     check_out: "",
@@ -23,7 +22,15 @@ export function BookingWidget({ listing }: Props) {
   });
 
   const pricePerNight = Number.parseFloat(listing.price) || 0;
-  const nights = preview ? Number.parseInt(preview, 10) : 0;
+  const nights = useMemo(() => {
+    if (!form.check_in || !form.check_out) {
+      return 1;
+    }
+    const start = new Date(form.check_in);
+    const end = new Date(form.check_out);
+    const diff = Math.ceil((end.getTime() - start.getTime()) / 86400000);
+    return Number.isFinite(diff) && diff > 0 ? diff : 1;
+  }, [form.check_in, form.check_out]);
 
   return (
     <section className="surface booking-card">
@@ -69,14 +76,6 @@ export function BookingWidget({ listing }: Props) {
               type="date"
               value={form.check_in}
               onChange={(event) => setForm({ ...form, check_in: event.target.value })}
-              onBlur={() => {
-                if (form.check_in && form.check_out) {
-                  const start = new Date(form.check_in);
-                  const end = new Date(form.check_out);
-                  const diff = Math.max(Math.ceil((end.getTime() - start.getTime()) / 86400000), 1);
-                  setPreview(String(diff));
-                }
-              }}
               required
             />
           </label>
@@ -87,14 +86,6 @@ export function BookingWidget({ listing }: Props) {
               type="date"
               value={form.check_out}
               onChange={(event) => setForm({ ...form, check_out: event.target.value })}
-              onBlur={() => {
-                if (form.check_in && form.check_out) {
-                  const start = new Date(form.check_in);
-                  const end = new Date(form.check_out);
-                  const diff = Math.max(Math.ceil((end.getTime() - start.getTime()) / 86400000), 1);
-                  setPreview(String(diff));
-                }
-              }}
               required
             />
           </label>
@@ -126,8 +117,10 @@ export function BookingWidget({ listing }: Props) {
 
         <div className="price-breakdown">
           <div className="listing-row">
-            <span>{formatMoney(pricePerNight)} x {preview || 1} night(s)</span>
-            <strong>{formatMoney(pricePerNight * (nights || 1))}</strong>
+            <span>
+              {formatMoney(pricePerNight)} x {nights} night(s)
+            </span>
+            <strong>{formatMoney(pricePerNight * nights)}</strong>
           </div>
           <div className="listing-row">
             <span>Cleaning fee</span>

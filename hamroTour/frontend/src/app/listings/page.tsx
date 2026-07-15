@@ -13,16 +13,17 @@ function pick(value: string | string[] | undefined) {
 export default async function ListingsPage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
+  const resolvedSearchParams = await searchParams;
   const categories = await serverFetchJson<Category[]>("/categories/");
   const params = new URLSearchParams();
-  const search = pick(searchParams.search);
-  const category = pick(searchParams.category);
-  const country = pick(searchParams.country);
-  const guests = pick(searchParams.guests);
-  const minPrice = pick(searchParams.min_price);
-  const maxPrice = pick(searchParams.max_price);
+  const search = pick(resolvedSearchParams.search);
+  const category = pick(resolvedSearchParams.category);
+  const country = pick(resolvedSearchParams.country);
+  const guests = pick(resolvedSearchParams.guests);
+  const minPrice = pick(resolvedSearchParams.min_price);
+  const maxPrice = pick(resolvedSearchParams.max_price);
 
   if (search) params.set("search", search);
   if (category) params.set("category", category);
@@ -35,10 +36,13 @@ export default async function ListingsPage({
 
   return (
     <div className="page-grid">
-      <section className="surface">
+      <section className="surface surface-emphasis">
         <div className="section-heading">
           <p className="eyebrow">Explore</p>
           <h1>Find your next escape</h1>
+          <p className="muted">
+            Search by destination, guest count, and budget. The demo data below comes from the original Wanderlust sample set.
+          </p>
         </div>
         <form className="form-grid" action="/listings" method="get">
           <div className="split">

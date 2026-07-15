@@ -125,6 +125,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ListingSerializer(serializers.ModelSerializer):
     owner = UserSummarySerializer(read_only=True)
     image = serializers.ImageField(required=False, allow_null=True, write_only=True)
+    external_image_url = serializers.URLField(required=False, allow_blank=True, allow_null=True)
     image_url = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
     review_count = serializers.SerializerMethodField()
@@ -155,6 +156,7 @@ class ListingSerializer(serializers.ModelSerializer):
             "latitude",
             "longitude",
             "image",
+            "external_image_url",
             "image_url",
             "is_featured",
             "is_active",

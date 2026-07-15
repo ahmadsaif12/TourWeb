@@ -16,6 +16,7 @@ const navLinks = [
 
 export function SiteHeader() {
   const [user, setUser] = useState<User | null>(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -62,6 +63,20 @@ export function SiteHeader() {
             <small>Stay local, travel bold</small>
           </span>
         </Link>
+
+        <form className="header-search" action="/listings" method="get" role="search">
+          <input
+            className="input header-search-input"
+            name="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search destinations, stays, or hosts"
+            aria-label="Search destinations"
+          />
+          <button type="submit" className="button button-solid header-search-button">
+            Search
+          </button>
+        </form>
 
         <nav className="site-nav">
           {navLinks.map((link) => (

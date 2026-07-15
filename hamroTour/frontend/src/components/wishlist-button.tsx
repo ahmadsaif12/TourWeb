@@ -7,16 +7,18 @@ import type { Listing } from "@/lib/types";
 
 type Props = {
   listing: Listing;
+  compact?: boolean;
 };
 
-export function WishlistButton({ listing }: Props) {
+export function WishlistButton({ listing, compact = false }: Props) {
   const [wishlisted, setWishlisted] = useState(listing.is_wishlisted);
   const [loading, setLoading] = useState(false);
 
   return (
     <button
       type="button"
-      className={`button ${wishlisted ? "button-solid" : "button-ghost"}`}
+      className={compact ? `wishlist-btn ${wishlisted ? "active" : ""}` : `button ${wishlisted ? "button-solid" : "button-ghost"}`}
+      aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
       disabled={loading}
       onClick={async () => {
         setLoading(true);
@@ -30,7 +32,15 @@ export function WishlistButton({ listing }: Props) {
         }
       }}
     >
-      {loading ? "Updating..." : wishlisted ? "Saved to wishlist" : "Save to wishlist"}
+      {compact ? (
+        <span aria-hidden="true">{loading ? "…" : wishlisted ? "♥" : "♡"}</span>
+      ) : loading ? (
+        "Updating..."
+      ) : wishlisted ? (
+        "Saved to wishlist"
+      ) : (
+        "Save to wishlist"
+      )}
     </button>
   );
 }

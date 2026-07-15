@@ -42,6 +42,7 @@ export function ListingForm({ categories }: Props) {
     address: "",
     latitude: "",
     longitude: "",
+    external_image_url: "",
     is_featured: false,
   });
 
@@ -142,6 +143,16 @@ export function ListingForm({ categories }: Props) {
           <input className="input" type="file" accept="image/*" onChange={(event) => setImage(event.target.files?.[0] || null)} />
         </label>
       </div>
+
+      <label className="field">
+        <span>Image URL (optional)</span>
+        <input
+          className="input"
+          value={form.external_image_url}
+          onChange={(event) => setForm({ ...form, external_image_url: event.target.value })}
+          placeholder="https://images.unsplash.com/..."
+        />
+      </label>
 
       <div className="split">
         <label className="field">

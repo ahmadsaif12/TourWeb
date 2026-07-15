@@ -7,7 +7,7 @@ export function SiteFooter() {
         <div>
           <p className="footer-title">HamroTour</p>
           <p className="muted">
-            A modern travel marketplace rebuilt with Django, Next.js, and S3 media storage.
+            A modern travel marketplace rebuilt with Django, Next.js, S3 media storage, and seeded demo stays.
           </p>
         </div>
         <div className="footer-links">
